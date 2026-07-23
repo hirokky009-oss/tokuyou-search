@@ -23,32 +23,13 @@
     homeStation: null,
   };
 
-  // ---- チェック・メモ（端末内のみ保存: localStorage） ----
-  const MARKS_KEY = "tokuyou_marks";
-  const marks = loadMarks();
-
-  function loadMarks() {
-    try {
-      return JSON.parse(localStorage.getItem(MARKS_KEY)) || {};
-    } catch (e) {
-      return {};
-    }
-  }
-
-  function saveMarks() {
-    try {
-      localStorage.setItem(MARKS_KEY, JSON.stringify(marks));
-    } catch (e) { /* プライベートブラウズ等では保存不可。動作は継続 */ }
-  }
-
+  // ---- チェック・メモ（保存先は store.js が管理: Firebase共有 or localStorage） ----
   function getMark(id) {
-    return marks[id] || { mark: null, memo: "" };
+    return MarkStore.get(id);
   }
 
   function setMark(id, patch) {
-    marks[id] = Object.assign(getMark(id), patch);
-    if (!marks[id].mark && !marks[id].memo) delete marks[id];  // 空になったら削除
-    saveMarks();
+    MarkStore.set(id, patch);
   }
 
   const el = {
@@ -72,6 +53,8 @@
         : "");
     MapView.init(state.center);
     MapView.setPinClickHandler(highlightCard);
+    // 保存層を初期化。他端末での変更（Firebase共有時）が届いたら一覧を再描画
+    MarkStore.init(() => refresh());
     bindEvents();
     refresh();
   }
