@@ -275,7 +275,7 @@
       ? `🚃約${ev.train.minutes}分`
       : `<span class="dist">🚃 −</span>`;
     const scoreNum = ev.total !== null ? `<span class="score-num">${(ev.total / 20).toFixed(1)}</span>` : "";
-    const capTxt = f.capacity ? `定員${f.capacity}名` : "定員 −";
+    const capTxt = f.capacity ? `定員${f.capacity_estimated ? "約" : ""}${f.capacity}名` : "定員 −";
 
     // 💰 月額目安（1割負担・第4段階・要介護1〜5のレンジ）
     const fee = f.fee && f.fee.monthly_estimate
