@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>評価基準の説明 — トクヨウサーチ</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .doc { max-width: 780px; margin: 0 auto; padding: 20px 16px 40px; }
+  .doc h2 { font-size: 20px; color: var(--primary); margin: 28px 0 10px; border-bottom: 2px solid var(--primary-light); padding-bottom: 6px; }
+  .doc h3 { font-size: 17px; margin: 18px 0 6px; }
+  .doc p, .doc li { font-size: 16px; margin: 8px 0; }
+  .doc table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 15px; }
+  .doc th, .doc td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; vertical-align: top; }
+  .doc th { background: var(--primary-light); white-space: nowrap; }
+  .doc .formula { background: #f4f4f0; border-radius: 8px; padding: 12px 14px; font-size: 15px; overflow-x: auto; }
+  .doc .note { background: #fdf3e7; border-left: 4px solid var(--accent); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 15px; }
+  .back-link { display: inline-block; font-size: 16px; color: var(--primary); padding: 10px 0; }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <h1>🏠 トクヨウサーチ</h1>
+  <p class="tagline">評価基準の説明 — ★はこうやって決めています</p>
+</header>
+
+<div class="doc">
+<a class="back-link" href="index.html">← 検索画面に戻る</a>
+
+<h2>総合評価（★1〜5）のしくみ</h2>
+<p>各施設を <strong>5つの指標</strong>（それぞれ0〜100点）で採点し、重み付き平均で総合スコア（100点満点）を計算します。表示の「3.5」などの数字は総合スコアを5点満点に換算した値、★の数はその四捨五入です（例：総合70.65点 → 3.5 → ★4）。</p>
+
+<table>
+  <tr><th>指標</th><th>重み（既定）</th><th>採点方法</th></tr>
+  <tr><td>🚗 車の通いやすさ</td><td>15%</td><td>車の所要時間目安が <strong>0分=100点 〜 60分以上=0点</strong> の直線換算</td></tr>
+  <tr><td>🚃 電車の通いやすさ</td><td>15%</td><td><strong>駅近さ60点</strong>（施設最寄駅まで徒歩5分以内=満点〜30分=0点）＋<strong>自宅側アクセス40点</strong>（自宅最寄駅からの乗車目安15分以内=満点〜60分=0点）</td></tr>
+  <tr><td>🏢 施設の大きさ</td><td>20%</td><td>掲載約1,800施設の中での<strong>定員の順位</strong>（大きいほど高得点。定員60名なら下位28%＝28点など）</td></tr>
+  <tr><td>💪 充実度</td><td>30%</td><td><strong>介護職員の配置50点</strong>（定員1床あたり0.3人=0点〜0.6人=満点）＋<strong>看護職員の配置30点</strong>（0.03人=0点〜0.12人=満点）＋<strong>協力医療機関あり20点</strong></td></tr>
+  <tr><td>📅 運営年数</td><td>20%</td><td>開設からの年数。<strong>25年以上=100点</strong>の比例配分（13年なら53点）</td></tr>
+</table>
+
+<h3>「主な通い方」の切替</h3>
+<p>検索画面の「主な通い方」ボタンで重みが変わります。</p>
+<ul>
+  <li><strong>🚗 車</strong> … 車30%・電車0%（車で通う方向け）</li>
+  <li><strong>🚃 電車</strong> … 車0%・電車30%（電車で面会に行く方向け）</li>
+  <li><strong>両方</strong>（既定） … 車15%・電車15%</li>
+</ul>
+<p>データが取得できていない指標は「評価なし」として除外し、残りの指標だけで重みを配分し直します。</p>
+
+<h2>計算例：第3育秀苑（★★★★☆ 3.5）</h2>
+<div class="formula">
+🚗 97点（約2分） × 15%　＝ 14.6<br>
+🚃 74点（約30分・徒歩16分） × 15%　＝ 11.1<br>
+🏢 28点（定員60名） × 20%　＝ 5.6<br>
+💪 96点（介護35人・看護7人・協力病院あり） × 30%　＝ 28.8<br>
+📅 53点（2013年開設・約13年） × 20%　＝ 10.6<br>
+──────────────────<br>
+総合 70.65点 ÷ 20 ＝ <strong>3.5</strong>（四捨五入で ★4）
+</div>
+<p>→「家から近く職員の配置は手厚いが、施設は小さめで運営歴は中程度」という読み方ができます。</p>
+
+<h2>🚗🚃 所要時間の目安について</h2>
+<p>カードの「🚗約○分 🚃約○分」は<strong>実際の経路検索ではなく近似値</strong>です。</p>
+<ul>
+  <li><strong>車</strong>：直線距離 × 道路係数1.4 ÷ 時速30km で算出</li>
+  <li><strong>電車</strong>：自宅最寄駅→施設最寄駅の距離を表定速度30km/hで換算＋乗継バッファ10分＋施設最寄駅からの徒歩（80m/分）</li>
+</ul>
+<p>正確なルートは各施設カードの「🚗車の経路」「🚃電車の乗換」リンク（Googleマップ）でご確認ください。</p>
+
+<h2>💰 月額費用の目安について</h2>
+<p>「月○〜○万円」は<strong>本人負担1割・所得第4段階（負担軽減なし）・30日</strong>を想定した、要介護1〜5のレンジです。</p>
+<div class="formula">
+月額 ＝ 介護サービス費の自己負担（公定単位数×約10.1円×30日×1割）<br>
+　　＋ 居住費×30日（施設の公表額。未取得の場合は国の基準費用額）<br>
+　　＋ 食費×30日（同上）<br>
+　　＋ 日常生活費の目安 15,000円
+</div>
+<div class="note">
+⚠️ 住民税非課税世帯などは「負担限度額認定」により居住費・食費が大きく軽減されます（月数万円下がることも）。また日常生活費（理美容・嗜好品など）は施設・個人により異なります。<strong>正確な金額は必ず施設に直接ご確認ください。</strong>
+</div>
+
+<h2>データの出どころ</h2>
+<table>
+  <tr><th>施設情報・職員体制・費用</th><td>厚生労働省「介護サービス情報公表システム」オープンデータおよび同システムの公表情報</td></tr>
+  <tr><th>最寄駅</th><td>HeartRails Express（駅位置データ）</td></tr>
+  <tr><th>地図</th><td>OpenStreetMap</td></tr>
+  <tr><th>住所検索</th><td>国土地理院 ジオコーディングAPI</td></tr>
+</table>
+<p>データは年2回（6月末・12月末時点）更新される公的データに基づきます。最新の空き状況・費用・体制は各施設へ直接お問い合わせください。</p>
+
+<div class="note">
+このサイトの評価は公開データからの機械的な計算であり、施設の介護の質そのものを保証するものではありません。<strong>最終判断は必ず見学のうえで行ってください。</strong>
+</div>
+
+<a class="back-link" href="index.html">← 検索画面に戻る</a>
+</div>
+
+<footer class="site-footer">
+  <p>データ出典：厚生労働省 介護サービス情報公表システム ／ 地図：© OpenStreetMap contributors ／ 住所検索：国土地理院</p>
+</footer>
+</body>
+</html>

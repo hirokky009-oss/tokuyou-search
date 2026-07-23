@@ -299,6 +299,15 @@
     applyMarkUI(card, f.id);
 
     const links = card.querySelector(".card-links");
+    // Googleマップの実経路（自宅→施設）: 車・電車
+    const origin = `${state.center.lat},${state.center.lon}`;
+    const dest = `${f.lat},${f.lon}`;
+    links.appendChild(makeLink(
+      `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dest}&travelmode=driving`,
+      "🚗 車の経路"));
+    links.appendChild(makeLink(
+      `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dest}&travelmode=transit`,
+      "🚃 電車の乗換"));
     links.appendChild(makeLink(f.kouhyou_url, "📋 公的情報（公表システム）"));
     if (f.official_url) links.appendChild(makeLink(f.official_url, "🌐 公式サイト"));
     if (f.tel) {
