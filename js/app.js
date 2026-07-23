@@ -19,8 +19,37 @@
     bandMax: 2,       // 距離帯の上限km
     mode: "both",     // car | train | both (FR-02-4)
     sort: "distance",
+    markFilter: "all",  // all | fav | hide-ng
     homeStation: null,
   };
+
+  // ---- チェック・メモ（端末内のみ保存: localStorage） ----
+  const MARKS_KEY = "tokuyou_marks";
+  const marks = loadMarks();
+
+  function loadMarks() {
+    try {
+      return JSON.parse(localStorage.getItem(MARKS_KEY)) || {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveMarks() {
+    try {
+      localStorage.setItem(MARKS_KEY, JSON.stringify(marks));
+    } catch (e) { /* プライベートブラウズ等では保存不可。動作は継続 */ }
+  }
+
+  function getMark(id) {
+    return marks[id] || { mark: null, memo: "" };
+  }
+
+  function setMark(id, patch) {
+    marks[id] = Object.assign(getMark(id), patch);
+    if (!marks[id].mark && !marks[id].memo) delete marks[id];  // 空になったら削除
+    saveMarks();
+  }
 
   const el = {
     input: document.getElementById("address-input"),
@@ -65,6 +94,13 @@
     });
     el.sortSelect.addEventListener("change", () => {
       state.sort = el.sortSelect.value;
+      refresh();
+    });
+    document.getElementById("mark-seg").addEventListener("click", e => {
+      const btn = e.target.closest("button[data-filter]");
+      if (!btn) return;
+      state.markFilter = btn.dataset.filter;
+      setActive(document.getElementById("mark-seg"), btn);
       refresh();
     });
   }
@@ -128,12 +164,17 @@
   function refresh() {
     state.homeStation = Score.findHomeStation(DATA.facilities, state.center);
 
-    // 全施設を評価してから距離帯フィルタ（bandMin < d ≤ bandMax）
+    // 全施設を評価してから距離帯フィルタ（bandMin < d ≤ bandMax）＋チェックフィルタ
     const visible = [];
     for (const f of DATA.facilities) {
       f._eval = Score.evaluate(f, state.center, state.homeStation, state.mode);
-      if (f._eval.distanceKm > state.bandMin && f._eval.distanceKm <= state.bandMax) visible.push(f);
-      else if (state.bandMin === 0 && f._eval.distanceKm === 0) visible.push(f);
+      const inBand = (f._eval.distanceKm > state.bandMin && f._eval.distanceKm <= state.bandMax) ||
+        (state.bandMin === 0 && f._eval.distanceKm === 0);
+      if (!inBand) continue;
+      const m = getMark(f.id).mark;
+      if (state.markFilter === "fav" && m !== "fav") continue;
+      if (state.markFilter === "hide-ng" && m === "ng") continue;
+      visible.push(f);
     }
 
     sortFacilities(visible);
@@ -245,7 +286,17 @@
       </div>
       <div class="card-info">${fee}${waiting}${rooms ? ` ｜ ${rooms}` : ""}</div>
       <div class="card-info">${MapView.escapeHtml(f.type)} ｜ ${capTxt}${f.nearest_station ? ` ｜ ${MapView.escapeHtml(f.nearest_station.name)}駅 徒歩${f.nearest_station.walk_min}分` : ""}</div>
-      <div class="card-links"></div>`;
+      <div class="card-links"></div>
+      <div class="card-marks">
+        <button type="button" class="mark-btn mark-fav">⭐ 気になる</button>
+        <button type="button" class="mark-btn mark-ng">❌ 対象外</button>
+        <button type="button" class="mark-btn memo-toggle">📝 メモ</button>
+      </div>
+      <div class="memo-area" hidden>
+        <textarea rows="2" placeholder="メモ（例：見学済み／待機が長い／母の希望 など）"></textarea>
+      </div>`;
+
+    applyMarkUI(card, f.id);
 
     const links = card.querySelector(".card-links");
     links.appendChild(makeLink(f.kouhyou_url, "📋 公的情報（公表システム）"));
@@ -257,6 +308,52 @@
       links.appendChild(tel);
     }
     return card;
+  }
+
+  /** チェック・メモUIの状態反映とイベント設定 */
+  function applyMarkUI(card, id) {
+    const m = getMark(id);
+    const favBtn = card.querySelector(".mark-fav");
+    const ngBtn = card.querySelector(".mark-ng");
+    const memoBtn = card.querySelector(".memo-toggle");
+    const memoArea = card.querySelector(".memo-area");
+    const textarea = memoArea.querySelector("textarea");
+
+    card.classList.toggle("fav", m.mark === "fav");
+    card.classList.toggle("ng", m.mark === "ng");
+    favBtn.classList.toggle("on", m.mark === "fav");
+    ngBtn.classList.toggle("on", m.mark === "ng");
+    textarea.value = m.memo || "";
+    if (m.memo) {
+      memoArea.hidden = false;
+      memoBtn.classList.add("on");
+    }
+
+    favBtn.addEventListener("click", () => {
+      const next = getMark(id).mark === "fav" ? null : "fav";
+      setMark(id, { mark: next });
+      applyMarkState(card, id);
+    });
+    ngBtn.addEventListener("click", () => {
+      const next = getMark(id).mark === "ng" ? null : "ng";
+      setMark(id, { mark: next });
+      applyMarkState(card, id);
+    });
+    memoBtn.addEventListener("click", () => {
+      memoArea.hidden = !memoArea.hidden;
+      if (!memoArea.hidden) textarea.focus();
+    });
+    textarea.addEventListener("change", () => setMark(id, { memo: textarea.value.trim() }));
+    textarea.addEventListener("blur", () => setMark(id, { memo: textarea.value.trim() }));
+  }
+
+  /** ボタン押下後の見た目だけ更新（再描画なし） */
+  function applyMarkState(card, id) {
+    const m = getMark(id);
+    card.classList.toggle("fav", m.mark === "fav");
+    card.classList.toggle("ng", m.mark === "ng");
+    card.querySelector(".mark-fav").classList.toggle("on", m.mark === "fav");
+    card.querySelector(".mark-ng").classList.toggle("on", m.mark === "ng");
   }
 
   function makeLink(href, label) {

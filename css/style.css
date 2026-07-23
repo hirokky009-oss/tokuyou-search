@@ -160,6 +160,36 @@ body {
   display: inline-block;
 }
 
+/* ---- チェック・メモ ---- */
+.facility-card.fav { border-color: var(--star); box-shadow: 0 2px 8px rgba(232, 160, 19, 0.3); background: #fffbf0; }
+.facility-card.ng { opacity: 0.55; background: #f2f2f2; }
+.card-marks { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.mark-btn {
+  font-size: 15px;
+  padding: 8px 14px;
+  min-height: 44px;
+  background: #fff;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--text);
+}
+.mark-btn:hover { border-color: var(--primary); }
+.mark-btn.mark-fav.on { background: #fff3d1; border-color: var(--star); font-weight: bold; }
+.mark-btn.mark-ng.on { background: #fde3dc; border-color: #b3472f; font-weight: bold; }
+.mark-btn.memo-toggle.on { border-color: var(--primary); background: var(--primary-light); }
+.memo-area { margin-top: 8px; }
+.memo-area textarea {
+  width: 100%;
+  font-size: 16px;
+  font-family: inherit;
+  padding: 10px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  resize: vertical;
+}
+.memo-area textarea:focus { border-color: var(--primary); outline: none; }
+
 .empty-message {
   padding: 24px;
   text-align: center;
