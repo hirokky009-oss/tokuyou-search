@@ -66,7 +66,10 @@
   // ---- 初期化 ----
   function initialize() {
     el.dataNote.textContent =
-      `情報時点：${DATA.meta.source_csv_date}（データ生成日：${DATA.meta.generated_at}）／掲載 ${DATA.meta.count} 施設（${DATA.meta.center.label}から${DATA.meta.radius_km}km圏）`;
+      `情報時点：${DATA.meta.source_csv_date}（データ生成日：${DATA.meta.generated_at}）／掲載 ${DATA.meta.count} 施設（${DATA.meta.center.label}から${DATA.meta.radius_km}km圏）`
+      + (DATA.meta.details_fetched
+        ? `／費用・待機者数：${DATA.meta.details_fetched}取得（施設が年1回報告する公表値のため、現在の人数とは異なる場合があります）`
+        : "");
     MapView.init(state.center);
     MapView.setPinClickHandler(highlightCard);
     bindEvents();
@@ -191,17 +194,24 @@
     return `${state.bandMin}〜${state.bandMax}km`;
   }
 
+  /** 入りやすさの目安: 待機者数÷定員（低いほど入りやすい）。待機未取得は末尾 */
+  function waitingRatio(f) {
+    if (f.waiting === null || f.waiting === undefined) return Infinity;
+    return f.waiting / (f.capacity || 70);  // 定員未記載は平均的な70床とみなす
+  }
+
   function sortFacilities(list) {
     const by = {
       distance: (a, b) => a._eval.distanceKm - b._eval.distanceKm,
       total: (a, b) => (b._eval.total ?? -1) - (a._eval.total ?? -1) || a._eval.distanceKm - b._eval.distanceKm,
+      easiness: (a, b) => waitingRatio(a) - waitingRatio(b) || a._eval.distanceKm - b._eval.distanceKm,
       capacity: (a, b) => (b.capacity ?? -1) - (a.capacity ?? -1) || a._eval.distanceKm - b._eval.distanceKm,
     };
     list.sort(by[state.sort] || by.distance);
   }
 
   function renderCount(visible) {
-    const sortLabel = { distance: "距離順", total: "総合評価順", capacity: "定員順" }[state.sort];
+    const sortLabel = { distance: "距離順", total: "総合評価順", easiness: "入りやすさ順", capacity: "定員順" }[state.sort];
     el.count.textContent = `${visible.length}件（${bandLabel()}・${sortLabel}）`;
   }
 
@@ -307,7 +317,7 @@
       "🚗 車の経路"));
     links.appendChild(makeLink(
       `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dest}&travelmode=transit`,
-      "🚃 電車の乗換"));
+      "🚃 電車・バスの乗換"));
     links.appendChild(makeLink(f.kouhyou_url, "📋 公的情報（公表システム）"));
     if (f.official_url) links.appendChild(makeLink(f.official_url, "🌐 公式サイト"));
     if (f.tel) {
