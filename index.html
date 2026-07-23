@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>トクヨウサーチ — 自宅から近い特養を探す</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <h1>🏠 トクヨウサーチ</h1>
+  <p class="tagline">自宅から近い順に特別養護老人ホームを探せます</p>
+</header>
+
+<section class="search-panel">
+  <div class="address-row">
+    <label for="address-input" class="visually-hidden">自宅の住所</label>
+    <input type="text" id="address-input" value="埼玉県和光市白子" placeholder="住所を入力（例：埼玉県和光市白子）">
+    <button id="search-btn" type="button">🔍 検索</button>
+  </div>
+  <div id="geo-message" class="geo-message" hidden></div>
+
+  <div class="controls">
+    <div class="control-group">
+      <span class="control-label">距離帯</span>
+      <div class="seg" id="radius-seg">
+        <button data-min="0" data-max="2" type="button" class="active">〜2km</button>
+        <button data-min="2" data-max="5" type="button">2〜5km</button>
+        <button data-min="5" data-max="10" type="button">5〜10km</button>
+        <button data-min="10" data-max="20" type="button">10〜20km</button>
+        <button data-min="20" data-max="30" type="button">20〜30km</button>
+        <button data-min="30" data-max="40" type="button">30〜40km</button>
+        <button data-min="40" data-max="50" type="button">40〜50km</button>
+        <button data-min="0" data-max="50" type="button">すべて</button>
+      </div>
+    </div>
+    <div class="control-group">
+      <span class="control-label">主な通い方</span>
+      <div class="seg" id="mode-seg">
+        <button data-mode="car" type="button">🚗 車</button>
+        <button data-mode="train" type="button">🚃 電車</button>
+        <button data-mode="both" type="button" class="active">両方</button>
+      </div>
+    </div>
+    <div class="control-group">
+      <span class="control-label">並び替え</span>
+      <select id="sort-select">
+        <option value="distance">距離が近い順</option>
+        <option value="total">総合評価が高い順</option>
+        <option value="capacity">定員が多い順</option>
+      </select>
+    </div>
+  </div>
+</section>
+
+<div id="map" aria-label="施設マップ"></div>
+
+<section class="result-section">
+  <h2 id="result-count">検索中…</h2>
+  <div id="card-list"></div>
+</section>
+
+<footer class="site-footer">
+  <p id="data-note"></p>
+  <p>掲載情報は公的オープンデータに基づく目安です。費用・空き状況など最新の情報は必ず各施設へ直接ご確認ください。</p>
+  <p>データ出典：厚生労働省 介護サービス情報公表システム ／ 地図：© OpenStreetMap contributors ／ 住所検索：国土地理院</p>
+</footer>
+
+<script src="data/facilities.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/score.js"></script>
+<script src="js/map.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

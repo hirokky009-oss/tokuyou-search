@@ -1,0 +1,201 @@
+/* トクヨウサーチ — 高齢者配慮: 16px以上・44pxタップ領域・AAコントラスト (NFR-02/03) */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --primary: #1a6b54;
+  --primary-light: #e4f2ed;
+  --accent: #d9822b;
+  --text: #222;
+  --text-sub: #555;
+  --bg: #f7f7f4;
+  --card-bg: #fff;
+  --border: #ddd;
+  --star: #e8a013;
+}
+
+body {
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Meiryo", sans-serif;
+  font-size: 16px;
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.6;
+}
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px;
+  clip: rect(0 0 0 0); overflow: hidden;
+}
+
+/* ---- ヘッダー ---- */
+.site-header {
+  background: var(--primary);
+  color: #fff;
+  padding: 14px 16px;
+}
+.site-header h1 { font-size: 22px; }
+.tagline { font-size: 14px; opacity: 0.9; }
+
+/* ---- 検索パネル ---- */
+.search-panel {
+  background: #fff;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.address-row { display: flex; gap: 8px; max-width: 640px; }
+#address-input {
+  flex: 1;
+  font-size: 16px;
+  padding: 10px 12px;
+  min-height: 44px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+}
+#address-input:focus { border-color: var(--primary); outline: none; }
+#search-btn {
+  font-size: 16px;
+  font-weight: bold;
+  min-height: 44px;
+  padding: 0 20px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+#search-btn:hover { background: #135843; }
+
+.geo-message {
+  margin-top: 8px;
+  padding: 10px 12px;
+  background: #fdf3e7;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  font-size: 15px;
+}
+.geo-message button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-size: 15px;
+  padding: 8px 10px;
+  margin-top: 6px;
+  min-height: 44px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.geo-message button:hover { background: var(--primary-light); }
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 24px;
+  margin-top: 12px;
+  align-items: center;
+}
+.control-group { display: flex; align-items: center; gap: 8px; }
+.control-label { font-size: 14px; color: var(--text-sub); font-weight: bold; white-space: nowrap; }
+
+.seg { display: inline-flex; border: 2px solid var(--primary); border-radius: 8px; overflow: hidden; }
+.seg button {
+  font-size: 15px;
+  padding: 8px 14px;
+  min-height: 44px;
+  min-width: 44px;
+  border: none;
+  background: #fff;
+  color: var(--primary);
+  cursor: pointer;
+  border-right: 1px solid var(--primary-light);
+}
+.seg button:last-child { border-right: none; }
+.seg button.active { background: var(--primary); color: #fff; font-weight: bold; }
+
+#sort-select {
+  font-size: 15px;
+  min-height: 44px;
+  padding: 8px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+}
+
+/* ---- 地図 ---- */
+#map {
+  height: 420px;
+  border-bottom: 3px solid var(--primary);
+}
+
+/* ---- 結果一覧 ---- */
+.result-section { max-width: 860px; margin: 0 auto; padding: 16px; }
+#result-count { font-size: 18px; margin-bottom: 12px; }
+
+.facility-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+.facility-card:hover, .facility-card.highlighted {
+  border-color: var(--primary);
+  box-shadow: 0 2px 10px rgba(26, 107, 84, 0.25);
+}
+.card-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.card-name { font-size: 18px; font-weight: bold; color: var(--primary); }
+.card-stars { font-size: 16px; color: var(--star); white-space: nowrap; font-weight: bold; }
+.card-stars .score-num { color: var(--text-sub); font-size: 14px; font-weight: normal; }
+.card-access { font-size: 16px; margin-top: 4px; }
+.card-access .dist { color: var(--text-sub); font-size: 14px; }
+.card-info { font-size: 15px; color: var(--text-sub); margin-top: 4px; }
+.card-links { margin-top: 8px; display: flex; gap: 12px; flex-wrap: wrap; }
+.card-links a {
+  font-size: 15px;
+  color: var(--primary);
+  text-decoration: underline;
+  padding: 6px 0;
+  display: inline-block;
+}
+
+.empty-message {
+  padding: 24px;
+  text-align: center;
+  color: var(--text-sub);
+  background: #fff;
+  border-radius: 12px;
+}
+.empty-message button {
+  font-size: 16px;
+  margin-top: 10px;
+  padding: 10px 20px;
+  min-height: 44px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* ---- フッター ---- */
+.site-footer {
+  margin-top: 24px;
+  padding: 16px;
+  background: #eee;
+  font-size: 13px;
+  color: var(--text-sub);
+  text-align: center;
+}
+.site-footer p { margin: 4px 0; }
+
+/* ---- 地図ポップアップ ---- */
+.leaflet-popup-content { font-size: 15px; line-height: 1.5; }
+.leaflet-popup-content .popup-name { font-weight: bold; font-size: 16px; }
+
+@media (max-width: 600px) {
+  #map { height: 320px; }
+  .controls { gap: 10px; }
+  .seg button { padding: 8px 10px; }
+}
