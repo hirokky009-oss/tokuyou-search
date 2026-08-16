@@ -26,7 +26,33 @@
     <button id="search-btn" type="button">🔍 検索</button>
   </div>
   <div id="geo-message" class="geo-message" hidden></div>
+</section>
 
+<section class="notice-panel">
+  <h2>📢 お知らせ</h2>
+  <p>掲載データは厚生労働省「介護サービス情報公表システム」の公開情報をもとに、<strong>年2回（6月末・12月末）</strong>更新する予定です。次回更新までは今回取得したデータのまま表示されます。</p>
+  <details>
+    <summary>データの更新手順（管理者向け）</summary>
+    <ol>
+      <li>厚労省の最新CSVを取得し、施設データを再生成する</li>
+      <li>各施設の詳細ページ（費用・待機者数など）を再取得する（任意・数十分〜1時間程度）</li>
+      <li>サイトへ反映して公開する</li>
+    </ol>
+    <pre><code>del batch\cache\jigyosho_510.csv batch\cache\jigyosho_540.csv
+py batch\build_data.py
+
+del batch\cache\details.json
+py batch\fetch_details.py
+py batch\build_data.py
+
+cd site
+git add -A
+git commit -m "データ更新"
+git push</code></pre>
+  </details>
+</section>
+
+<section class="search-panel">
   <div class="controls">
     <div class="control-group">
       <span class="control-label">距離帯</span>
@@ -38,7 +64,11 @@
         <button data-min="20" data-max="30" type="button">20〜30km</button>
         <button data-min="30" data-max="40" type="button">30〜40km</button>
         <button data-min="40" data-max="50" type="button">40〜50km</button>
-        <button data-min="0" data-max="50" type="button">すべて</button>
+        <button data-min="50" data-max="75" type="button">50〜75km</button>
+        <button data-min="75" data-max="100" type="button">75〜100km</button>
+        <button data-min="100" data-max="125" type="button">100〜125km</button>
+        <button data-min="125" data-max="150" type="button">125〜150km</button>
+        <button data-min="0" data-max="150" type="button">すべて</button>
       </div>
     </div>
     <div class="control-group">
@@ -54,6 +84,7 @@
       <select id="sort-select">
         <option value="distance">距離が近い順</option>
         <option value="total">総合評価が高い順</option>
+        <option value="fee">価格が安い順</option>
         <option value="easiness">入りやすさ（待機が少ない順）</option>
         <option value="capacity">定員が多い順</option>
       </select>

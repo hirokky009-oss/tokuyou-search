@@ -172,7 +172,7 @@
   }
 
   function bandLabel() {
-    if (state.bandMin === 0 && state.bandMax === 50) return "50km圏すべて";
+    if (state.bandMin === 0 && state.bandMax === 150) return "150km圏すべて";
     if (state.bandMin === 0) return `${state.bandMax}km以内`;
     return `${state.bandMin}〜${state.bandMax}km`;
   }
@@ -183,10 +183,17 @@
     return f.waiting / (f.capacity || 70);  // 定員未記載は平均的な70床とみなす
   }
 
+  /** 月額費用の目安（下限）。未取得は末尾 */
+  function feeValue(f) {
+    if (!f.fee || !f.fee.monthly_estimate) return Infinity;
+    return f.fee.monthly_estimate.min;
+  }
+
   function sortFacilities(list) {
     const by = {
       distance: (a, b) => a._eval.distanceKm - b._eval.distanceKm,
       total: (a, b) => (b._eval.total ?? -1) - (a._eval.total ?? -1) || a._eval.distanceKm - b._eval.distanceKm,
+      fee: (a, b) => feeValue(a) - feeValue(b) || a._eval.distanceKm - b._eval.distanceKm,
       easiness: (a, b) => waitingRatio(a) - waitingRatio(b) || a._eval.distanceKm - b._eval.distanceKm,
       capacity: (a, b) => (b.capacity ?? -1) - (a.capacity ?? -1) || a._eval.distanceKm - b._eval.distanceKm,
     };
@@ -194,7 +201,7 @@
   }
 
   function renderCount(visible) {
-    const sortLabel = { distance: "距離順", total: "総合評価順", easiness: "入りやすさ順", capacity: "定員順" }[state.sort];
+    const sortLabel = { distance: "距離順", total: "総合評価順", fee: "価格が安い順", easiness: "入りやすさ順", capacity: "定員順" }[state.sort];
     el.count.textContent = `${visible.length}件（${bandLabel()}・${sortLabel}）`;
   }
 
@@ -208,11 +215,11 @@
       div.innerHTML = "この条件では施設が見つかりませんでした。<br>";
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.textContent = "すべて（50km圏）を表示";
+      btn.textContent = "すべて（150km圏）を表示";
       btn.addEventListener("click", () => {
         state.bandMin = 0;
-        state.bandMax = 50;
-        setActive(el.radiusSeg, el.radiusSeg.querySelector('[data-min="0"][data-max="50"]'));
+        state.bandMax = 150;
+        setActive(el.radiusSeg, el.radiusSeg.querySelector('[data-min="0"][data-max="150"]'));
         refresh();
       });
       div.appendChild(btn);

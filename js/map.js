@@ -4,7 +4,7 @@
 "use strict";
 
 const MapView = (() => {
-  const RADII = [2, 5, 10, 20, 30, 40, 50];
+  const RADII = [2, 5, 10, 20, 30, 40, 50, 75, 100, 125, 150];
   const STAR_COLORS = { 5: "#1a6b54", 4: "#4c9c62", 3: "#e8a013", 2: "#d9822b", 1: "#b3472f", null: "#888" };
 
   let map, homeMarker, circleLayer, pinLayer;

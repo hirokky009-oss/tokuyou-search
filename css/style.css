@@ -54,6 +54,28 @@ body {
   padding: 12px 16px;
   border-bottom: 1px solid var(--border);
 }
+
+/* ---- お知らせ ---- */
+.notice-panel {
+  background: var(--primary-light);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.notice-panel h2 { font-size: 16px; color: var(--primary); margin-bottom: 6px; }
+.notice-panel p { font-size: 14px; color: var(--text); }
+.notice-panel details { margin-top: 8px; font-size: 14px; }
+.notice-panel summary { cursor: pointer; color: var(--primary); font-weight: bold; }
+.notice-panel ol { margin: 8px 0 8px 20px; }
+.notice-panel pre {
+  margin-top: 8px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 13px;
+  color: var(--text-sub);
+}
 .address-row { display: flex; gap: 8px; max-width: 640px; }
 #address-input {
   flex: 1;
@@ -110,7 +132,7 @@ body {
 .control-group { display: flex; align-items: center; gap: 8px; }
 .control-label { font-size: 14px; color: var(--text-sub); font-weight: bold; white-space: nowrap; }
 
-.seg { display: inline-flex; border: 2px solid var(--primary); border-radius: 8px; overflow: hidden; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 2px solid var(--primary); border-radius: 8px; overflow: hidden; }
 .seg button {
   font-size: 15px;
   padding: 8px 14px;
