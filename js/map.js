@@ -97,6 +97,17 @@ const MapView = (() => {
     ]);
   }
 
+  /** 抽出結果（気になる／メモありなど）を、施設の分布に合わせてまとめて表示する */
+  function fitToFacilities(facilities, fallbackCenter, fallbackRadiusKm) {
+    if (!facilities || facilities.length === 0) {
+      fitToRadius(fallbackCenter, fallbackRadiusKm);
+      return;
+    }
+    const bounds = L.latLngBounds(facilities.map(f => [f.lat, f.lon]));
+    bounds.extend([fallbackCenter.lat, fallbackCenter.lon]);
+    map.fitBounds(bounds, { padding: [30, 30] });
+  }
+
   function setPinClickHandler(fn) { onPinClick = fn; }
 
   function escapeHtml(s) {
@@ -105,5 +116,5 @@ const MapView = (() => {
     })[c]);
   }
 
-  return { init, drawHome, updatePins, fitToRadius, setBand, setPinClickHandler, escapeHtml };
+  return { init, drawHome, updatePins, fitToRadius, fitToFacilities, setBand, setPinClickHandler, escapeHtml };
 })();

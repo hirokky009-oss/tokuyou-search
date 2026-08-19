@@ -19,9 +19,13 @@
     bandMax: 2,       // 距離帯の上限km
     mode: "both",     // car | train | both (FR-02-4)
     sort: "distance",
-    markFilter: "all",  // all | fav | hide-ng
+    markFilter: "all",  // all | fav | ng | memo | marked | hide-ng
+    keyword: "",
     homeStation: null,
   };
+
+  // 距離帯を無視して全件から抽出するフィルタ（気になる施設は距離帯をまたいで探したいため）
+  const BAND_IGNORING_FILTERS = ["fav", "ng", "memo", "marked"];
 
   // ---- チェック・メモ（保存先は store.js が管理: Firebase共有 or localStorage） ----
   function getMark(id) {
@@ -39,6 +43,7 @@
     radiusSeg: document.getElementById("radius-seg"),
     modeSeg: document.getElementById("mode-seg"),
     sortSelect: document.getElementById("sort-select"),
+    keywordInput: document.getElementById("keyword-input"),
     count: document.getElementById("result-count"),
     list: document.getElementById("card-list"),
     dataNote: document.getElementById("data-note"),
@@ -87,6 +92,16 @@
       if (!btn) return;
       state.markFilter = btn.dataset.filter;
       setActive(document.getElementById("mark-seg"), btn);
+      // 気になる／対象外／メモなどの抽出は、選んだ距離帯の外にある施設も取りこぼさないよう距離帯を「すべて」にする
+      if (BAND_IGNORING_FILTERS.includes(state.markFilter)) {
+        state.bandMin = 0;
+        state.bandMax = 150;
+        setActive(el.radiusSeg, el.radiusSeg.querySelector('[data-min="0"][data-max="150"]'));
+      }
+      refresh();
+    });
+    el.keywordInput.addEventListener("input", () => {
+      state.keyword = el.keywordInput.value.trim();
       refresh();
     });
   }
@@ -150,15 +165,22 @@
   function refresh() {
     state.homeStation = Score.findHomeStation(DATA.facilities, state.center);
 
-    // 全施設を評価してから距離帯フィルタ（bandMin < d ≤ bandMax）＋チェックフィルタ
+    // 全施設を評価してから距離帯フィルタ（bandMin < d ≤ bandMax）＋キーワード＋チェックフィルタ
+    const kw = state.keyword.toLowerCase();
     const visible = [];
     for (const f of DATA.facilities) {
       f._eval = Score.evaluate(f, state.center, state.homeStation, state.mode);
       const inBand = (f._eval.distanceKm > state.bandMin && f._eval.distanceKm <= state.bandMax) ||
         (state.bandMin === 0 && f._eval.distanceKm === 0);
       if (!inBand) continue;
-      const m = getMark(f.id).mark;
+      if (kw && !(f.name.toLowerCase().includes(kw) || (f.city || "").toLowerCase().includes(kw))) continue;
+      const markData = getMark(f.id);
+      const m = markData.mark;
+      const hasMemo = !!(markData.memo && markData.memo.trim());
       if (state.markFilter === "fav" && m !== "fav") continue;
+      if (state.markFilter === "ng" && m !== "ng") continue;
+      if (state.markFilter === "memo" && !hasMemo) continue;
+      if (state.markFilter === "marked" && !(m === "fav" || m === "ng" || hasMemo)) continue;
       if (state.markFilter === "hide-ng" && m === "ng") continue;
       visible.push(f);
     }
@@ -168,7 +190,11 @@
     renderList(visible);
     MapView.updatePins(visible);
     MapView.setBand(state.bandMin, state.bandMax);
-    MapView.fitToRadius(state.center, state.bandMax);
+    if (BAND_IGNORING_FILTERS.includes(state.markFilter)) {
+      MapView.fitToFacilities(visible, state.center, state.bandMax);
+    } else {
+      MapView.fitToRadius(state.center, state.bandMax);
+    }
   }
 
   function bandLabel() {
@@ -200,9 +226,20 @@
     list.sort(by[state.sort] || by.distance);
   }
 
+  const MARK_FILTER_LABEL = {
+    fav: "⭐気になるのみ", ng: "❌対象外のみ", memo: "📝メモありのみ",
+    marked: "📌チェック・メモ済み全部", "hide-ng": "❌対象外を除く",
+  };
+
   function renderCount(visible) {
     const sortLabel = { distance: "距離順", total: "総合評価順", fee: "価格が安い順", easiness: "入りやすさ順", capacity: "定員順" }[state.sort];
-    el.count.textContent = `${visible.length}件（${bandLabel()}・${sortLabel}）`;
+    const markLabel = MARK_FILTER_LABEL[state.markFilter];
+    const bandPart = BAND_IGNORING_FILTERS.includes(state.markFilter) ? "全件から抽出" : bandLabel();
+    let text = `${visible.length}件（${bandPart}・${sortLabel}`;
+    if (markLabel) text += `・${markLabel}`;
+    if (state.keyword) text += `・「${state.keyword}」で絞込`;
+    text += "）";
+    el.count.textContent = text;
   }
 
   const PAGE_SIZE = 100; // 広域検索時の描画パフォーマンス対策（NFR-01）

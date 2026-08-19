@@ -54,6 +54,10 @@ git push</code></pre>
 
 <section class="search-panel">
   <div class="controls">
+    <div class="control-group keyword-group">
+      <span class="control-label">🔍 施設名・地域で絞り込み</span>
+      <input type="text" id="keyword-input" placeholder="例：やすらぎ／和光市">
+    </div>
     <div class="control-group">
       <span class="control-label">距離帯</span>
       <div class="seg" id="radius-seg">
@@ -93,7 +97,10 @@ git push</code></pre>
       <span class="control-label">表示</span>
       <div class="seg" id="mark-seg">
         <button data-filter="all" type="button" class="active">すべて</button>
-        <button data-filter="fav" type="button">⭐のみ</button>
+        <button data-filter="fav" type="button">⭐気になる</button>
+        <button data-filter="ng" type="button">❌対象外</button>
+        <button data-filter="memo" type="button">📝メモあり</button>
+        <button data-filter="marked" type="button">📌チェック・メモ済み全部</button>
         <button data-filter="hide-ng" type="button">❌を隠す</button>
       </div>
     </div>
